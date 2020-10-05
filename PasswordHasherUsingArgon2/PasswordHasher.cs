@@ -1,6 +1,7 @@
 ﻿using Konscious.Security.Cryptography;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PasswordHasherUsingArgon2
@@ -16,11 +17,11 @@ namespace PasswordHasherUsingArgon2
                 argon2.Salt = Encoding.UTF8.GetBytes(salt);
                 argon2.DegreeOfParallelism = 8; // four cores
                 argon2.Iterations = 10;
-                argon2.MemorySize = 1024 * 1024; // 1 GB
+                argon2.MemorySize = 32768; 
+               
 
-                var hash = Convert.ToBase64String(argon2.GetBytes(24));
-                Console.WriteLine("indomie");
-
+                var hash = Convert.ToBase64String(argon2.GetBytes(16));
+                
                 return hash;
 
             }
@@ -32,11 +33,16 @@ namespace PasswordHasherUsingArgon2
             
         }
 
+        //to validate the hash, you can use any of these methods
+        public static bool Validate(string password, string saltCreated, string hashCreated)
+        {
+            return Create(password, saltCreated) == hashCreated;
+        }
 
-        //public static bool Validate(string password, byte[] salt, string hash)
-        //{
-        //    var value = new Argon2id(Encoding.UTF8.GetBytes(password));
-        //    return Create(value, salt) == hash;
-        //}
+        public static bool VerifyHash(string password, string saltCreated, string hashCreated)
+        {
+            var newHash = Create(password, saltCreated);
+            return hashCreated.SequenceEqual(newHash);
+        }
     }
 }

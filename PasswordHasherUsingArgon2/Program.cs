@@ -7,29 +7,54 @@ namespace PasswordHasherUsingArgon2
         static void Main(string[] args)
         {
 
-            Console.WriteLine("Hello World!");
-            Console.Write("Enter your password: ");
-
             try
             {
+                Console.WriteLine("Password Hashing Using Argon2");
+                Console.Write("Enter your password: ");
 
                 var value = Console.ReadLine();
 
                 var salt = Convert.ToBase64String(Salt.CreateSalt());
+                
+                //OR
 
-                Console.WriteLine(salt);
+                //var salt = Convert.ToBase64String(Salt.Create());
+
                 var saltCreated = salt;
+
                 var hash = PasswordHasher.Create(value, salt);
-                //Console.WriteLine($"Hash is '{ Convert.ToBase64String(hash) }'.");
-                // Console.WriteLine($"Hash is "+Convert.ToBase64String(hash) +".");
-                Console.WriteLine(hash);
+
                 var hashCreated = hash;
-                Console.WriteLine(hashCreated);
                
+                var isValid = true;
 
-                Console.Write("Enter your password for validation: ");
-                var password = Console.ReadLine();
+                while (isValid == true)
+                {
+                    Console.Write("Enter your password for validation: ");
+                    var password = Console.ReadLine();
 
+                    if (PasswordHasher.VerifyHash(password, saltCreated, hashCreated) == true)
+                    {
+                        Console.WriteLine("Password has been verified!");
+                        break;
+                    }
+
+                    //  OR
+
+                    //if (PasswordHasher.Validate(password, saltCreated, hashCreated) == true)
+                    //{
+                    //    Console.WriteLine("Password has been verified!");
+                    //    break;
+                    //}
+
+                    else
+                    {
+                        Console.WriteLine("Wrong password! Try again");
+                    }
+
+                }
+
+                Console.ReadLine();
 
             }
             catch (Exception ex)
@@ -37,21 +62,8 @@ namespace PasswordHasherUsingArgon2
                 Console.WriteLine(ex.Message);
                 throw;
             }
+
          
-            //Console.WriteLine(saltCreated);
-
-           
-
-
-            //if (PasswordHasher.Validate(password, saltCreated, hashCreated) == true)
-            //{
-            //    Console.WriteLine("Password has been verified!");
-            //    break;
-            //}
-            //else
-            //{
-            //    Console.WriteLine("Wrong password! Try again");
-            //}
 
         }
     }
